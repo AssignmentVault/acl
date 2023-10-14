@@ -57,10 +57,58 @@ namespace acl
             bool operator != (const DynArrIterator& it) const { return !(*this == it); }
         };
 
+        template<typename DynArray>
+        class DynArrReverseIterator
+        {
+        public:
+            using valueType = typename DynArray::valueType;
+            using iterator = typename DynArray::riterator;
+
+
+        private:
+            valueType* mpPtr = nullptr;
+            valueType* mpBegin = nullptr;
+            valueType* mpEnd = nullptr;
+
+        public:
+            DynArrReverseIterator() noexcept {};
+            DynArrReverseIterator(valueType* apPtr, valueType* apBegin, valueType* apEnd)
+                : mpPtr(apPtr), mpBegin(apBegin), mpEnd(apEnd)
+            {
+            }
+
+            inline const valueType& get() const
+            {
+                return *mpPtr;
+            }
+
+            inline void set(const valueType& atyValue)
+            {
+                *mpPtr = atyValue;
+            }
+
+            inline void next()
+            {
+                mpPtr--;
+            }
+
+            bool hasNext() const
+            {
+                if (mpPtr == mpBegin) {
+                    return false;
+                }
+                return true;
+            }
+
+            bool operator == (const DynArrReverseIterator& it) const { return mpPtr == it.mpPtr; }
+            bool operator != (const DynArrReverseIterator& it) const { return !(*this == it); }
+        };
+
     public:
         using valueType = _Ty;
         using indexType = size_t;
         using iterator = DynArrIterator<DynamicArray<_Ty>>;
+        using riterator = DynArrReverseIterator<DynamicArray<_Ty>>;
 
     private:
         valueType* mArrayBuffer     = nullptr;
@@ -180,6 +228,26 @@ namespace acl
         const iterator end() const
         {
             return iterator(mArrayBuffer + mSize, mArrayBuffer, mArrayBuffer + mSize);
+        }
+
+        riterator rbegin()
+        {
+            return riterator(mArrayBuffer, mArrayBuffer, mArrayBuffer + mSize);
+        }
+
+        const riterator rbegin() const
+        {
+            return riterator(mArrayBuffer, mArrayBuffer, mArrayBuffer + mSize);
+        }
+
+        riterator rend()
+        {
+            return riterator(mArrayBuffer + mSize, mArrayBuffer, mArrayBuffer + mSize);
+        }
+
+        const riterator rend() const
+        {
+            return riterator(mArrayBuffer + mSize, mArrayBuffer, mArrayBuffer + mSize);
         }
 
         indexType size() const { return mSize; }
