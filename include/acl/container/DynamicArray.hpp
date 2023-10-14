@@ -71,13 +71,10 @@ namespace acl
     private:
         void resize() {
             mCapacity *= 2;
-            valueType* newArrayBuffer = static_cast<valueType*>(malloc(sizeof(valueType) * mCapacity));
-            std::copy(mArrayBuffer, mArrayBuffer + mSize, newArrayBuffer);
-            for (indexType i{}; i < mSize; i++) {
-                newArrayBuffer[i] = std::move(mArrayBuffer[i]);
-            }
 
-            for (indexType i{}; i < mSize; ++i) {
+            valueType* newArrayBuffer = static_cast<valueType*>(malloc(sizeof(valueType) * mCapacity));
+            for (indexType i{}; i < mSize; i++) {
+                new (&newArrayBuffer[i]) valueType(std::move(mArrayBuffer[i]));
                 mArrayBuffer[i].~valueType();
             }
 
@@ -89,7 +86,11 @@ namespace acl
         DynamicArray()
         {
             mSize = 0;
-            mCapacity = 0;
+            mCapacity = 16;
+            mArrayBuffer = static_cast<valueType*>(malloc(sizeof(valueType) * mCapacity));
+            for (indexType i{}; i < mCapacity; ++i) {
+                new (&mArrayBuffer[i]) valueType();
+            }
         };
 
         DynamicArray(const DynamicArray<valueType>& aCopy)
@@ -102,7 +103,7 @@ namespace acl
             }
         }
 
-        DynamicArray(int aSize)
+        explicit DynamicArray(int aSize)
         {
             mSize = aSize;
             mCapacity = mSize * 2;
@@ -142,7 +143,8 @@ namespace acl
             }
 
             for (indexType i = mSize; i > aIndex; i--) {
-                mArrayBuffer[i] = mArrayBuffer[i - 1];
+                new (&mArrayBuffer[i]) valueType(std::move(mArrayBuffer[i - 1]));
+                mArrayBuffer[i - 1].~valueType();
             }
 
             mSize += 1;
@@ -153,39 +155,39 @@ namespace acl
         void remove(int anIndex)
         {
             for (size_t i(anIndex + 1); i < size(); i++) {
-                mArrayBuffer[i - 1] = std::move(mArrayBuffer[i]);
-                mArrayBuffer[i] = 0;
+                mArrayBuffer[i].~valueType();
+                new (&mArrayBuffer[i - 1]) valueType(std::move(mArrayBuffer[i]));
             }
 
             mSize--;
         }
 
-        inline iterator begin()
+        iterator begin()
         {
             return iterator(mArrayBuffer, mArrayBuffer, mArrayBuffer + mSize);
         }
 
-        inline const iterator begin() const
+        const iterator begin() const
         {
             return iterator(mArrayBuffer, mArrayBuffer, mArrayBuffer + mSize);
         }
 
-        inline iterator end()
+        iterator end()
         {
             return iterator(mArrayBuffer + mSize, mArrayBuffer, mArrayBuffer + mSize);
         }
 
-        inline const iterator end() const
+        const iterator end() const
         {
             return iterator(mArrayBuffer + mSize, mArrayBuffer, mArrayBuffer + mSize);
         }
 
-        inline indexType size() const { return mSize; }
-        inline indexType capacity() const { return mCapacity; }
-        inline bool empty() const { return mSize == 0; }
+        indexType size() const { return mSize; }
+        indexType capacity() const { return mCapacity; }
+        bool empty() const { return mSize == 0; }
 
-        inline const valueType& operator [] (indexType anIndex) const { return mArrayBuffer[anIndex]; }
-        inline valueType& operator [] (indexType anIndex) { return mArrayBuffer[anIndex]; }
+        const valueType& operator [] (indexType anIndex) const { return mArrayBuffer[anIndex]; }
+        valueType& operator [] (indexType anIndex) { return mArrayBuffer[anIndex]; }
     };
 }
 #endif // !DYNAMIC_ARRAY_HPP

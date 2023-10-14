@@ -6,7 +6,7 @@ TEST(DynamicArray, ConstructDynamicArrayByDefault) {
     acl::DynamicArray<int> foo;
 
     EXPECT_EQ(0, foo.size());
-    EXPECT_EQ(0, foo.capacity());
+    EXPECT_EQ(16, foo.capacity());
 }
 
 TEST(DynamicArray, ConstructDynamicArrayWithSize) {
@@ -96,6 +96,18 @@ TEST(DynamicArray, IteratorTest) {
     it.next();
     EXPECT_FALSE(it.hasNext());
 
+}
+
+TEST(DynamicArray, RemoveDataTest) {
+    acl::DynamicArray<int> foo;
+    foo.insert(1);
+    foo.insert(2);
+    foo.insert(3);
+    foo.insert(4);
+    foo.insert(5);
+
+    foo.remove(3);
+    EXPECT_EQ(foo[3], 5);
 }
 
 int main(int argc, char* argv[])
