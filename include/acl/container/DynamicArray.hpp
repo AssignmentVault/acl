@@ -63,106 +63,129 @@ namespace acl
         using iterator = DynArrIterator<DynamicArray<_Ty>>;
 
     private:
-        valueType* mtyArrayBuffer = nullptr;
-        indexType mnCurrentIndex = NULL;
-        indexType mnBufferSize = NULL;
-        indexType mnActualSize = NULL;
+        valueType* mArrayBuffer     = nullptr;
+        indexType mnCurrentIndex    = NULL;
+        indexType mSize             = NULL;
+        indexType mCapacity         = NULL;
+
+    private:
+        void resize() {
+            mCapacity *= 2;
+            valueType* newArrayBuffer = static_cast<valueType*>(malloc(sizeof(valueType) * mCapacity));
+            std::copy(mArrayBuffer, mArrayBuffer + mSize, newArrayBuffer);
+            for (indexType i{}; i < mSize; i++) {
+                newArrayBuffer[i] = std::move(mArrayBuffer[i]);
+            }
+
+            for (indexType i{}; i < mSize; ++i) {
+                mArrayBuffer[i].~valueType();
+            }
+
+            free(mArrayBuffer);
+            mArrayBuffer = newArrayBuffer;
+        }
 
     public:
         DynamicArray()
         {
-            mnBufferSize = 0;
-            mnActualSize = 16;
-
-            mtyArrayBuffer = static_cast<valueType*>(calloc(mnActualSize, sizeof(valueType) * mnActualSize));
+            mSize = 0;
+            mCapacity = 0;
         };
 
-        DynamicArray(int anSize)
+        DynamicArray(const DynamicArray<valueType>& aCopy)
         {
-            mnBufferSize = anSize;
-            mnActualSize = mnBufferSize * 2;
+            mSize = aCopy.mSize;
+            mCapacity = aCopy.mSize * 2;
+            mArrayBuffer = static_cast<valueType*>(malloc(sizeof(valueType) * mCapacity));
+            for (indexType i{}; i < mSize; i++) {
+                mArrayBuffer[i] = aCopy[i];
+            }
+        }
 
-            mtyArrayBuffer = static_cast<valueType*>(calloc(mnActualSize, sizeof(valueType) * mnActualSize));
+        DynamicArray(int aSize)
+        {
+            mSize = aSize;
+            mCapacity = mSize * 2;
+            mArrayBuffer = static_cast<valueType*>(malloc(sizeof(valueType) * mCapacity));
+            for (indexType i{}; i < mCapacity; ++i) {
+                new (&mArrayBuffer[i]) valueType();
+            }
         };
 
         ~DynamicArray()
         {
-            for (size_t i{}; i < mnActualSize; i++) {
-                mtyArrayBuffer[i].~valueType();
+            for (size_t i{}; i < mCapacity; ++i) {
+                mArrayBuffer[i].~valueType();
             }
         }
 
-        int insert(const valueType& atyValue)
+        indexType insert(const valueType& aValue)
         {
-            if (mnBufferSize + 1 >= mnActualSize) {
-                mnActualSize += 10;
-                mtyArrayBuffer = static_cast<valueType*>(realloc(mtyArrayBuffer, sizeof(valueType) * mnActualSize));
+            if (mSize == mCapacity) {
+                resize();
             }
 
-            mtyArrayBuffer[mnBufferSize] = atyValue;
-            mnBufferSize++;
+            mArrayBuffer[mSize] = aValue;
+            mSize += 1;
 
-            return mnBufferSize - 1;
+            return mSize - 1;
         }
 
-        int insert(int anIndex, const valueType& atyValue)
+        indexType insert(int aIndex, const valueType& aValue)
         {
-            if (anIndex == mnBufferSize) {
-                return insert(atyValue);
+            if (mSize == mCapacity) {
+                resize();
             }
 
-            valueType* newBuffer = static_cast<valueType*>(calloc(mnActualSize, sizeof(valueType) * mnActualSize));
-            for (indexType i{}; i < (anIndex + 1); i++) {
-                newBuffer[i] = mtyArrayBuffer[i];
-            }
-            newBuffer[anIndex] = atyValue;
-
-            for (indexType i(anIndex + 1); i < mnBufferSize + 1; i++) {
-                newBuffer[i] = mtyArrayBuffer[i - 1];
+            if (aIndex == mSize) {
+                return insert(aValue);
             }
 
-            free(mtyArrayBuffer);
-            mtyArrayBuffer = std::move(newBuffer);
-            mnBufferSize++;
+            for (indexType i = mSize; i > aIndex; i--) {
+                mArrayBuffer[i] = mArrayBuffer[i - 1];
+            }
 
-            return anIndex;
+            mSize += 1;
+            mArrayBuffer[aIndex] = aValue;
+            return aIndex;
         }
 
         void remove(int anIndex)
         {
             for (size_t i(anIndex + 1); i < size(); i++) {
-                mtyArrayBuffer[i - 1] = std::move(mtyArrayBuffer[i]);
-                mtyArrayBuffer[i] = 0;
+                mArrayBuffer[i - 1] = std::move(mArrayBuffer[i]);
+                mArrayBuffer[i] = 0;
             }
 
-            mnBufferSize--;
+            mSize--;
         }
 
         inline iterator begin()
         {
-            return iterator(mtyArrayBuffer, mtyArrayBuffer, mtyArrayBuffer + mnBufferSize);
+            return iterator(mArrayBuffer, mArrayBuffer, mArrayBuffer + mSize);
         }
 
         inline const iterator begin() const
         {
-            return iterator(mtyArrayBuffer, mtyArrayBuffer, mtyArrayBuffer + mnBufferSize);
+            return iterator(mArrayBuffer, mArrayBuffer, mArrayBuffer + mSize);
         }
 
         inline iterator end()
         {
-            return iterator(mtyArrayBuffer + mnBufferSize, mtyArrayBuffer, mtyArrayBuffer + mnBufferSize);
+            return iterator(mArrayBuffer + mSize, mArrayBuffer, mArrayBuffer + mSize);
         }
 
         inline const iterator end() const
         {
-            return iterator(mtyArrayBuffer + mnBufferSize, mtyArrayBuffer, mtyArrayBuffer + mnBufferSize);
+            return iterator(mArrayBuffer + mSize, mArrayBuffer, mArrayBuffer + mSize);
         }
 
-        inline indexType size() const { return mnBufferSize; }
-        inline bool empty() const { return mnBufferSize == 0; }
+        inline indexType size() const { return mSize; }
+        inline indexType capacity() const { return mCapacity; }
+        inline bool empty() const { return mSize == 0; }
 
-        inline const valueType& operator [] (indexType anIndex) const { return mtyArrayBuffer[anIndex]; }
-        inline valueType& operator [] (indexType anIndex) { return mtyArrayBuffer[anIndex]; }
+        inline const valueType& operator [] (indexType anIndex) const { return mArrayBuffer[anIndex]; }
+        inline valueType& operator [] (indexType anIndex) { return mArrayBuffer[anIndex]; }
     };
 }
 #endif // !DYNAMIC_ARRAY_HPP
