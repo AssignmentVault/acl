@@ -16,12 +16,6 @@ TEST(DynamicArray, ConstructDynamicArrayWithSize) {
     EXPECT_EQ(50, foo.capacity());
 }
 
-TEST(DynamicArray, ConstructDynamicArrayString) {
-    acl::DynamicArray<std::string> foo(10);
-
-    EXPECT_EQ(typeid(foo[0]), typeid(std::string));
-}
-
 // Push
 
 TEST(DynamicArray, DataInsertion) {
@@ -108,6 +102,57 @@ TEST(DynamicArray, RemoveDataTest) {
 
     foo.remove(3);
     EXPECT_EQ(foo[3], 5);
+}
+
+// Strings
+
+TEST(DynamicArray, ConstructDynamicArrayString) {
+    acl::DynamicArray<std::string> foo(10);
+
+    EXPECT_EQ(typeid(foo[0]), typeid(std::string));
+}
+
+TEST(DynamicArray, CopyConstructorStringTest) {
+    acl::DynamicArray<std::string> foo(5);
+    foo.insert(std::string("1"));
+    foo.insert(std::string("2"));
+    foo.insert(std::string("3"));
+    foo.insert(std::string("4"));
+    foo.insert(std::string("5"));
+
+    acl::DynamicArray<std::string> bar(foo);
+    for (size_t i{}; i < bar.size(); i++) {
+        EXPECT_EQ(bar[i], foo[i]);
+    }
+}
+
+TEST(DynamicArray, RemoveStringDataTest) {
+    acl::DynamicArray<std::string> foo;
+    foo.insert(std::string("1"));
+    foo.insert(std::string("2"));
+    foo.insert(std::string("3"));
+    foo.insert(std::string("4"));
+    foo.insert(std::string("5"));
+
+    foo.remove(3);
+    EXPECT_EQ(foo[3], "5");
+}
+
+TEST(DynamicArray, InsertStringDataTest) {
+    acl::DynamicArray<std::string> foo;
+    foo.insert(std::string("1"));
+    foo.insert(std::string("2"));
+    foo.insert(std::string("3"));
+    foo.insert(std::string("4"));
+    foo.insert(std::string("5"));
+
+    foo.insert(2, "148");
+    EXPECT_EQ(foo[0], "1");
+    EXPECT_EQ(foo[1], "2");
+    EXPECT_EQ(foo[2], "148");
+    EXPECT_EQ(foo[3], "3");
+    EXPECT_EQ(foo[4], "4");
+    EXPECT_EQ(foo[5], "5");
 }
 
 int main(int argc, char* argv[])

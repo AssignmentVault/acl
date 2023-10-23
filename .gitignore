@@ -23,7 +23,9 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
-SampleNovel/*.exe
+
+[Tt]ests/[Ss]ort-[Bb]enchmark/*.txt
+[Tt]ests/[Ss]ort-[Bb]enchmark/*.xlsx
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/

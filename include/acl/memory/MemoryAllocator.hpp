@@ -6,36 +6,21 @@
 namespace acl
 {
     template<typename _Ty>
-    class MemoryAllocator final
+    class MemoryAllocator
     {
-        using _Ty           = valueType;
-        using _Ty           = valuePointer;
-        using const _Ty*    = constValuePointer;
+    public:
+        MemoryAllocator() = default;
+        virtual ~MemoryAllocator() = default;
 
+        virtual void Init()     = 0;
+        virtual void Destroy()  = 0;
 
-    private:
-        std::size_t mBlockSize;
-        _Ty* mBlocks;
+        virtual void* Alloc(size_t aSize) = 0;
+        virtual void Free(void* aPointer) = 0;
 
     public:
-        MemoryAllocator() constexpr {}
-        MemoryAllocator(const MemoryAllocator* mAllocator) noexcept = default;
-        MemoryAllocator(std::size_t aBlockCount) {
-            mBlocksSize = sizeof(aBlockCount);
-            mBlocks = malloc(mBlockSize)
-        }
-
-        ~MemoryAllocator();
-
-        virtual void Init();
-        virtual void Destroy();
-
-        virtual void* Alloc(size_t aSize);
-        virtual void Free(void* aPointer);
-
-    public:
-        virtual void dumpStat() const;
-        virtual void dumpBlocks() const;
+        virtual void dumpStat() const   = 0;
+        virtual void dumpBlocks() const = 0;
 
     };
 }

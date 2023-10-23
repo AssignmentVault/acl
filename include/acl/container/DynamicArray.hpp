@@ -167,7 +167,8 @@ namespace acl
     public:
         using valueType = _Ty;
         using indexType = size_t;
-        using iterator = DynArrIterator<DynamicArray<_Ty>>;
+
+        using iterator  = DynArrIterator<DynamicArray<_Ty>>;
         using riterator = DynArrReverseIterator<DynamicArray<_Ty>>;
 
     private:
@@ -214,12 +215,12 @@ namespace acl
         * @param[in] aCopy - other object of the acl::DynamicArray class.
         */
         DynamicArray(const DynamicArray<valueType>& aCopy)
+            : DynamicArray(aCopy.size())
         {
             mSize = aCopy.mSize;
             mCapacity = aCopy.mSize * 2;
-            mArrayBuffer = static_cast<valueType*>(malloc(sizeof(valueType) * mCapacity));
             for (indexType i{}; i < mSize; i++) {
-                mArrayBuffer[i] = aCopy[i];
+                new (&mArrayBuffer[i]) valueType(std::move(aCopy[i]));
             }
         }
 
@@ -245,6 +246,7 @@ namespace acl
             for (size_t i{}; i < mCapacity; ++i) {
                 mArrayBuffer[i].~valueType();
             }
+            free(mArrayBuffer);
         }
 
         /**
@@ -286,7 +288,7 @@ namespace acl
             }
 
             mSize += 1;
-            mArrayBuffer[aIndex] = aValue;
+            new (&mArrayBuffer[aIndex]) valueType(aValue);
             return aIndex;
         }
 
@@ -297,8 +299,8 @@ namespace acl
         void remove(int anIndex)
         {
             for (size_t i(anIndex + 1); i < size(); i++) {
-                mArrayBuffer[i].~valueType();
                 new (&mArrayBuffer[i - 1]) valueType(std::move(mArrayBuffer[i]));
+                mArrayBuffer[i].~valueType();
             }
 
             mSize--;
