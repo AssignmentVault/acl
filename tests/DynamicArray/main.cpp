@@ -16,6 +16,18 @@ TEST(DynamicArray, ConstructDynamicArrayWithSize) {
     EXPECT_EQ(50, foo.capacity());
 }
 
+TEST(DynamicArray, ConstructWithMoveConstructor) {
+    acl::DynamicArray<int> foo;
+    for (size_t i{}; i < 10; i++) {
+        foo.insert(i + 1);
+    }
+
+    acl::DynamicArray<int> bar(std::move(foo));
+    for (size_t i{}; i < 10; i++) {
+        EXPECT_EQ(bar[i], i + 1);
+    }
+}
+
 // Push
 
 TEST(DynamicArray, DataInsertion) {

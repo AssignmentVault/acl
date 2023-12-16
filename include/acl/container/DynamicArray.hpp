@@ -187,7 +187,7 @@ namespace acl
             mCapacity *= 2;
 
             valueType* newArrayBuffer = static_cast<valueType*>(malloc(sizeof(valueType) * mCapacity));
-            for (indexType i{}; i < mSize; i++) {
+            for (indexType i{}; i < mCapacity; i++) {
                 new (&newArrayBuffer[i]) valueType(std::move(mArrayBuffer[i]));
                 mArrayBuffer[i].~valueType();
             }
@@ -222,6 +222,17 @@ namespace acl
             for (indexType i{}; i < mSize; i++) {
                 new (&mArrayBuffer[i]) valueType(std::move(aCopy[i]));
             }
+        }
+
+        DynamicArray(DynamicArray&& aDynArray) noexcept
+        {
+            mArrayBuffer    = aDynArray.mArrayBuffer;
+            mSize           = aDynArray.mSize;
+            mCapacity       = aDynArray.mCapacity;
+
+            aDynArray.mArrayBuffer  = nullptr;
+            aDynArray.mSize         = 0;
+            aDynArray.mCapacity     = 0;
         }
 
         /**
