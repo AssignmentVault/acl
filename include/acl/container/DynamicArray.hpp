@@ -27,9 +27,9 @@ namespace acl
 
 
         private:
-            valueType* mpPtr = nullptr;
-            valueType* mpBegin = nullptr;
-            valueType* mpEnd = nullptr;
+            valueType* mpPtr    = nullptr;
+            valueType* mpBegin  = nullptr;
+            valueType* mpEnd    = nullptr;
 
         public:
             /**

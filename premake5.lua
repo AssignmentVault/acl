@@ -7,7 +7,7 @@ workspace "acl"
     binoutput = "%{cfg.buildcfg}.%{cfg.system}.%{cfg.architecture}"
 
     project "acl"
-        kind "ConsoleApp"
+        kind "StaticLib"
         language "C++"
         cppdialect "C++17"
         staticruntime "on"
@@ -28,10 +28,42 @@ workspace "acl"
 
         links
         {
+
         }
 
         filter "configurations:Debug"
             symbols "on"
 
+            defines
+            {
+                "ACL_DEBUG"
+            }
+
         filter "configurations:Release"
             optimize "on"
+
+            defines
+            {
+                "ACL_RELEASE"
+            }
+        
+        filter "system:Windows"
+
+            defines
+            {
+                "ACL_WIN32"
+            }
+
+        filter "system:Unix"
+
+            defines
+            {
+                "ACL_UNIX"
+            }
+
+        filter "system:Mac"
+        
+            defines
+            {
+                "ACL_MAC"
+            }
