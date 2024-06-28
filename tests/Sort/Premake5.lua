@@ -2,7 +2,7 @@ include "../../dependencies.lua"
 
 
 workspace "Sort_Test"
-    architecture "x86_64"
+    architecture "x64"
     configurations { "Debug", "Release" }
 
     binoutput = "%{cfg.buildcfg}.%{cfg.system}.%{cfg.architecture}"
@@ -18,18 +18,13 @@ workspace "Sort_Test"
 
         files
         {
-            "./**.hpp",
-            "./**.cpp",
+            "./main.cpp"
         }
 
         includedirs
         {
             "../../include",
             "../../%{IncludeThirdpartyDirs.gtest}"
-        }
-
-        links
-        {
         }
 
         filter "configurations:Debug"

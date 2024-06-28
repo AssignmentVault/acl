@@ -363,6 +363,5 @@ MigrationBackup/
 .vs/
 bin/
 int/
-dataset/raw
-dataset/clean
-dataset/waifu2x-caffe
+
+!./thirdparty/GoogleTest/lib

@@ -1,7 +1,7 @@
 include "dependencies.lua"
 
 workspace "acl"
-    architecture "x86_64"
+    architecture "x64"
     configurations { "Debug", "Release" }
 
     binoutput = "%{cfg.buildcfg}.%{cfg.system}.%{cfg.architecture}"
@@ -24,11 +24,6 @@ workspace "acl"
         includedirs
         {
             "./include"
-        }
-
-        links
-        {
-
         }
 
         filter "configurations:Debug"

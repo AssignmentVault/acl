@@ -2,10 +2,14 @@ include "../../dependencies.lua"
 
 
 workspace "Allocator"
-    architecture "x86_64"
+    architecture "x64"
     configurations { "Debug", "Release" }
 
     binoutput = "%{cfg.buildcfg}.%{cfg.system}.%{cfg.architecture}"
+
+    -- group "Dependencies"
+    --     include "../../premake5"
+    -- group ""
 
     project "Allocator"
         kind "ConsoleApp"
@@ -18,8 +22,7 @@ workspace "Allocator"
 
         files
         {
-            "./**.hpp",
-            "./**.cpp",
+            "./main.cpp"
         }
 
         includedirs
@@ -28,16 +31,13 @@ workspace "Allocator"
             "../../%{IncludeThirdpartyDirs.gtest}"
         }
 
-        links
-        {
-        }
-
         filter "configurations:Debug"
             symbols "on"
 
             links
             {
-                "../../%{IncludeThirdpartyLibs.gtest_d}"
+                "../../%{IncludeThirdpartyLibs.gtest_d}",
+                "../../bin/Debug.windows.x86_64/acl/acl.lib"
             }
 
         filter "configurations:Release"
@@ -45,5 +45,6 @@ workspace "Allocator"
 
             links
             {
-                "../../%{IncludeThirdpartyLibs.gtest}"
+                "../../%{IncludeThirdpartyLibs.gtest}",
+                "../../bin/Release.windows.x86_64/acl/acl.lib"
             }

@@ -4,5 +4,5 @@ IncludeThirdpartyDirs["gtest"] = "thirdparty/GoogleTest/GoogleTest/googletest/in
 
 -- Include libs
 IncludeThirdpartyLibs = {}
-IncludeThirdpartyLibs["gtest_d"] = "thirdparty/GoogleTest/bin/Debug/gtest.lib"
-IncludeThirdpartyLibs["gtest"] = "thirdparty/GoogleTest/bin/Release/gtest.lib"
+IncludeThirdpartyLibs["gtest_d"] = "thirdparty/GoogleTest/lib/Debug/gtest.lib"
+IncludeThirdpartyLibs["gtest"] = "thirdparty/GoogleTest/lib/Release/gtest.lib"

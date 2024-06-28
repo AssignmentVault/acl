@@ -2,7 +2,7 @@ include "../../dependencies.lua"
 
 
 workspace "Sort-Benchmark"
-    architecture "x86_64"
+    architecture "x64"
     configurations { "Debug", "Release" }
 
     binoutput = "%{cfg.buildcfg}.%{cfg.system}.%{cfg.architecture}"
@@ -18,8 +18,7 @@ workspace "Sort-Benchmark"
 
         files
         {
-            "./**.hpp",
-            "./**.cpp",
+            "./main.cpp"
         }
 
         includedirs
